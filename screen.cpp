@@ -110,7 +110,7 @@ void screen::loop() {
 		*/
 		
 		
-		snwprintf(fb, 10, L"%ld", fc++);
+		//snwprintf(fb, 10, L"%ld", fc++);
 		
 		console::write(fb, cb, c);
 		
