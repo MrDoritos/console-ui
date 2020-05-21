@@ -109,7 +109,7 @@ int main() {
 	wscreen.child->add(&testelement);
 	textbox textbox(&wscreen);
 	//wscreen.child->add(&textbox);
-	testelement.add(&textbox);
+	testelement.add(&textbox);	
 	wscreen.start();
 
 	//console::write(0,0,"Hello world", BRED | FBLUE);

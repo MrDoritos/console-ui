@@ -6,6 +6,18 @@
 screen::screen()
 	:framebuffer(this)
 {
+	//while(!adv::ready);
+	if (!adv::ready) {
+		std::unique_lock<std::mutex> lk(adv::startLock);
+		if (adv::ready)
+			goto cond;
+		adv::cvStart.wait(lk);
+	}
+	cond:;
+		
+	adv::setThreadState(false); //We do it manually
+	adv::setDrawingMode(DRAWINGMODE_COMPARE);
+	
 	run = false;
 	
 	child = new element(this);
@@ -38,6 +50,7 @@ void screen::focusPop(element* current, bool& token) {
 }
 	
 void screen::loop() {
+	long fc = 0;
 	while (run) {
 		//Key presses
 		char key = console::readKeyAsync();
@@ -93,12 +106,20 @@ void screen::loop() {
 			framebuffer[i] = (char)fb[i];
 		}
 		console::write(fb, cb, c);
-		#endif
+		#endif		
 		*/
+		
+		
+		snwprintf(fb, 10, L"%ld", fc++);
+		
 		console::write(fb, cb, c);
 		
+		//adv::write(fb, cb, c);
+		
+		//adv::draw();
+				
 		//~30 fps
-		console::sleep(33);
+		//console::sleep(16);
 		
 	}
 }

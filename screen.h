@@ -1,7 +1,7 @@
 #pragma once
 #include "framebuffer.h" //Includes box.h
 //#include "element.h"
-#include "console.h"
+#include "advancedConsole.h"
 #include "eventHandler.h"
 
 #include <vector>
