@@ -12,9 +12,9 @@ struct element : public framebuffer {
 		this->screen = scr;
 		parent = nullptr;
 		closed = false;
-		focused = false;
 		trapArrowKeys = false;
 		doFrame = true;
+		canFocus = true;
 	}
 	
 	void update();
@@ -47,7 +47,8 @@ struct element : public framebuffer {
 	screen* screen;
 	element* parent;
 	bool closed;
-	bool focused;
+	bool focused();
 	bool trapArrowKeys;
 	bool doFrame;
+	bool canFocus;
 };
