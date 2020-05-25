@@ -25,12 +25,14 @@ struct framebuffer : public box {
 	void setMaxY(int sizey);
 	void setMax(int sizex, int sizey);
 	void setBackground(char character, char color);
+	void setBorder(char color);
 	void drawBorder(char character, char color);
 	void drawBorder(wchar_t character, char color);
 	void drawFancyBorder(int type, char color);
 	void doUseScreen(bool uS);
 	void doUseNull(bool uN);
 	void doUseBackground(bool uB);
+	void doUseBorder(bool uB);
 	void frame();
 	void clear();
 	void clear(char character, char color);
@@ -45,8 +47,9 @@ struct framebuffer : public box {
 	
 	bool useScreen;
 	screen* scr; //For getting max size
-	char backgroundcharacter, backgroundcolor;
+	char backgroundcharacter, backgroundcolor, borderColor;
 	bool useBackground;
+	bool useBorder;
 	bool useNull;
 	bool doClear;
 };

@@ -1,4 +1,6 @@
 #include "element.h"
+
+#include "screen.h"
 /*
 element::element(screen* scr)
 	:framebuffer(scr)
@@ -100,8 +102,12 @@ void element::focus() {
 	//Must not call children when focused, focus is a single element type deal, ya know
 	//for (auto* e : children)
 	//	e->focus();
-	focused = true;
+	//focused = true;
 	handler.handle(FLG_FOCUS);
+}
+
+bool element::focused() {
+	return screen->focused == this;
 }
 
 element* element::add(element* element) {

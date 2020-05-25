@@ -8,14 +8,12 @@ framebuffer::framebuffer(screen* screen)
 	scr = screen;
 	backgroundcharacter = ' ';
 	backgroundcolor = BBLACK | FWHITE;
+	borderColor = FRED | BBLACK;
 	useScreen = false;
 	useBackground = false;
+	useBorder = false;
 	useNull = false;
 	doClear = true;
-}
-
-int framebuffer::getSizeX() {
-	return sizex;
 }
 
 void framebuffer::setBox(box box) {
@@ -24,22 +22,42 @@ void framebuffer::setBox(box box) {
 	clear();
 }
 
+void framebuffer::setBorder(char color) {
+	borderColor = color;
+}
+
+void framebuffer::doUseBorder(bool uB) {
+	useBorder = uB;
+}
+
+int framebuffer::getSizeX() {
+	if (useBorder)
+		return sizex - 2;
+	return sizex;
+}
+
+int framebuffer::getSizeY() {
+	if (useBorder)
+		return sizey - 2;
+	return sizey;
+}
+
 void framebuffer::drawFancyBorder(int type, char color) {
 	switch (type) {
 		case CHARACTER_BORDER: {
-				for (int x = 0; x < sizex + 1; x++) {
+				for (int x = 0; x < sizex; x++) {
 					write(x, 0, '-', color);
-					write(x, sizey, '-', color);
+					write(x, sizey - 1, '-', color);
 				}
-				for (int y = 0; y < sizey + 1; y++) {
+				for (int y = 0; y < sizey; y++) {
 					write(0, y, '|', color);
-					write(sizex, y, '|', color);
+					write(sizex - 1, y, '|', color);
 				}			
 				write(0,0, '+', color);
-				write(0,sizey, '+', color);
-				write(sizex,0, '+', color);
-				write(sizex, sizey, '+', color);
-			break;	
+				write(0,sizey - 1, '+', color);
+				write(sizex - 1, 0, '+', color);
+				write(sizex - 1, sizey - 1, '+', color);
+			break;
 		}
 		case BLOCK_BORDER: {
 				drawBorder(L'█', color);
@@ -156,6 +174,10 @@ void framebuffer::allocate(int sizex, int sizey) {
 }
 
 void framebuffer::frame() {
+	//Add border
+	if (useBorder)
+		drawFancyBorder(CHARACTER_BORDER, borderColor);
+	
 	//We don't need to copy if we already use the screen's buffer
 	if (!useScreen) {
 		for (int x = 0; x < sizex; x++)

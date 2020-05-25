@@ -15,16 +15,26 @@ struct textbox : public element {
 			handler.assign(FLG_UPDATE, func(textbox, textbox::update));
 			handler.assign(FLG_FRAME, func(textbox, textbox::frame));
 			handler.assign(FLG_KEYPRESS, func(textbox, textbox::keypress));
+			handler.assign(FLG_CREATE, func(textbox, textbox::create));
 			setSize(10,10);
 			setOffset(0,0);
 			setBackground('#', BWHITE | FBLACK);
 			clear();
 			doUseScreen(true);
+			doUseBorder(true);
+			setBorder(FBLUE | BBLACK);
 		}
 		
+	void create() {
+		setc(parent->getc(0.0f, 0.25f));
+	}
+		
 	void keypress() {
-		switch (screen->pressed) {
-			case 8:
+		if (!focused())
+			return;
+		
+		switch (NOMOD(screen->pressed)) {
+			case VK_BACKSPACE:
 			{
 				if (sbuffer.length() > 0)
 					sbuffer.pop_back();
@@ -32,8 +42,10 @@ struct textbox : public element {
 			}			
 			default:
 			{
-				sbuffer += screen->pressed;				
-			}			
+				if (NOMOD(screen->pressed) < ' ' || NOMOD(screen->pressed) > '~')
+					break;
+				sbuffer += NOMOD(screen->pressed);
+			}
 		}
 	}
 		
@@ -49,6 +61,9 @@ struct textbox : public element {
 	}
 	
 	void frame() {
+		if (focused())
+			drawFancyBorder(CHARACTER_BORDER, FRED | BBLACK);
+				
 		for (int i = 0; i < sbuffer.length(); i++)
 			write(i % sizex, i / sizex, sbuffer[i], FWHITE | BBLACK);
 	}
@@ -107,12 +122,25 @@ int main() {
 	screen wscreen;
 	stest testelement = stest(&wscreen);
 	wscreen.child->add(&testelement);
-	textbox textbox(&wscreen);
-	//wscreen.child->add(&textbox);
-	testelement.add(&textbox);	
+	
+	textbox textbox1(&wscreen);
+	textbox textbox2(&wscreen);
+	textbox textbox3(&wscreen);
+	textbox textbox4(&wscreen);
+	
+	testelement.add(&textbox1);
+	testelement.add(&textbox2);
+	testelement.add(&textbox3);
+	testelement.add(&textbox4);
+	
+	textbox1.setc(0.0f, 0.0f, 0.5f, 0.5f);
+	textbox2.setc(0.5f, 0.0f, 0.5f, 0.5f);
+	textbox3.setc(0.0f, 0.5f, 0.5f, 0.5f);
+	textbox4.setc(0.5f, 0.5f, 0.5f, 0.5f);	
+	
 	wscreen.start();
 
 	//console::write(0,0,"Hello world", BRED | FBLUE);
 	//while (console::readKey() != 27);
-	return 0;
+	return 1;
 }

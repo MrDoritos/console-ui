@@ -3,6 +3,8 @@
 
 #include <string.h>
 
+#include <bitset>
+
 screen::screen()
 	:framebuffer(this)
 {
@@ -16,7 +18,7 @@ screen::screen()
 	cond:;
 		
 	adv::setThreadState(false); //We do it manually
-	adv::setDrawingMode(DRAWINGMODE_COMPARE);
+	//adv::setDrawingMode(DRAWINGMODE_COMPARE);
 	
 	run = false;
 	
@@ -36,12 +38,20 @@ void screen::start() {
 	loop();
 }
 
-void screen::focusPush(element* current, bool& token) {
-	if (token) {
-		focused = current;
-		return;
+void screen::focusPush() {
+	bool token = child->focused();
+	element* last = focused;
+	for (int i = 0; i < 2; i++) {
+		focusPush(child, token);
+		if (last != focused)
+			break; //Win
 	}
-	//if ()
+}
+
+bool screen::focusPush(element* current, bool& token) {
+	for (auto* e : current->children) {
+		token =
+	}
 }
 
 //Reverse iterator, however you do dat
@@ -53,10 +63,30 @@ void screen::loop() {
 	long fc = 0;
 	while (run) {
 		//Key presses
-		char key = console::readKeyAsync();
-		if (key == 27) {
+		int key = console::readKeyAsync();
+		if (HASKEY(key, VK_ESCAPE)) {
 			return;
 		}			
+		if (HASKEY(key, VK_TAB) && HASMOD(key, __CTRL)) {
+			fprintf(stderr, "focus change %ld to ", focused);
+			focusPush();
+			fprintf(stderr, "%ld\r\n", focused);
+		}
+		if (key) {
+			std::bitset<32> b(key);
+			fprintf(stderr, "You pressed %i:%c [%s]\r\n", key, key, b.to_string().c_str());		
+		}
+		
+		if (pressed == key) {
+			held = key;
+			child->keyheld();
+			child->keypress();
+		} else {
+			pressed = key;
+			child->keypress();
+		}
+		
+		/*
 		//Skip null key, null is no key
 		for (int i = 1; i < 256; i++) {
 			if (i == key) {
@@ -80,6 +110,7 @@ void screen::loop() {
 				keys[i].held = false;
 			}
 		}
+		*/
 						
 		child->onClear();
 		
@@ -118,8 +149,8 @@ void screen::loop() {
 		
 		//adv::draw();
 				
-		//~30 fps
-		//console::sleep(16);
+		//30 updates per second with a peek frame count of 30 per second
+		console::sleep(33);
 		
 	}
 }
