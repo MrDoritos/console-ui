@@ -28,6 +28,7 @@ screen::screen()
 	child->setc(get());
 	setBackground(' ', BBLACK | FBLACK);
 	clear();
+	//child->doUseClear(false);
 	//Already know the screen resolution, and this will not change because the console buffer will remain the same.
 
 }
@@ -49,9 +50,7 @@ void screen::focusPush() {
 }
 
 bool screen::focusPush(element* current, bool& token) {
-	for (auto* e : current->children) {
-		token =
-	}
+	
 }
 
 //Reverse iterator, however you do dat
@@ -112,11 +111,14 @@ void screen::loop() {
 		}
 		*/
 						
-		child->onClear();
+		//child->onClear();
+				
+		//for (auto* e : child->children)
+		//	e->onClear();
 		
 		child->update();
 		
-		child->onFrame();		
+		child->onFrame();						
 		
 		int c = getCount();
 		/*

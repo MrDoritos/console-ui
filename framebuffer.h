@@ -14,6 +14,8 @@ struct framebuffer : public box {
 	framebuffer(screen* screen);
 	int getSizeX();
 	int getSizeY();
+	int getOffX();
+	int getOffY();
 	void setSizeX(int sizex);
 	void setSizeY(int sizey);
 	void setSize(int sizex, int sizey);
@@ -26,6 +28,7 @@ struct framebuffer : public box {
 	void setMax(int sizex, int sizey);
 	void setBackground(char character, char color);
 	void setBorder(char color);
+	void setBorder(char color, bool state);
 	void drawBorder(char character, char color);
 	void drawBorder(wchar_t character, char color);
 	void drawFancyBorder(int type, char color);
@@ -33,11 +36,12 @@ struct framebuffer : public box {
 	void doUseNull(bool uN);
 	void doUseBackground(bool uB);
 	void doUseBorder(bool uB);
+	void doUseClear(bool c);
 	void frame();
 	void clear();
 	void clear(char character, char color);
-	void write(int x, int y, char character, char color);
-	void write(int x, int y, wchar_t character, char color);
+	void write(int x, int y, char character, char color, bool borderOverride = false);
+	void write(int x, int y, wchar_t character, char color, bool borderOverride = false);
 	
 	wchar_t* fb;
 	char* cb;

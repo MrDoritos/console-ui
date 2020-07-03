@@ -5,6 +5,74 @@
 
 #include <string>
 
+#define SX getSizeX()
+#define SY getSizeY()
+#define OX getOffX()
+#define OY getOffY()
+
+static void* s_screen;
+
+template<typename T>
+struct helperElement : public element {
+	void* derived;
+	helperElement(void* derived)
+		:element(s_screen) {
+			this->derived = derived;
+			if (derived)
+				handler.setReferer(derived);
+			handler.assign(FLG_CLEAR, func(T, T::onClear));
+			handler.assign(FLG_CLICK, func(T, T::onClick));
+			handler.assign(FLG_CLOSE, func(T, T::onClose));
+			handler.assign(FLG_CREATE, func(T, T::onCreate));
+			handler.assign(FLG_FOCUS, func(T, T::onFocus));
+			handler.assign(FLG_FRAME, func(T, T::onFrame));
+			handler.assign(FLG_KEYHELD, func(T, T::onKeyheld));
+			handler.assign(FLG_KEYPRESS, func(T, T::onKeypress));
+			handler.assign(FLG_KEYRELEASE, func(T, T::onKeyrelease));
+			handler.assign(FLG_RESIZE, func(T, T::onResize));
+			handler.assign(FLG_UPDATE, func(T, T::onUpdate));
+		}
+		
+	virtual void onClear() {}
+	virtual void onClick() {}
+	virtual void onClose() {}
+	virtual void onCreate() {}
+	virtual void onFocus() {}
+	virtual void onFrame() {}
+	virtual void onKeyheld() {}
+	virtual void onKeypress() {}
+	virtual void onKeyrelease() {}
+	virtual void onResize() {}
+	virtual void onUpdate() {}
+};
+
+struct newTb : public helperElement<newTb> {
+	newTb():helperElement(this) {}
+	
+	void onCreate() override {
+		//setBackground('#', FRED | BWHITE);
+		//setBorder(FBLUE | BWHITE, true);
+		//doUseBackground(true);
+		//border = 0;
+		//doUseScreen(true);
+	}
+	
+	unsigned char border;
+	
+	void onUpdate() override {
+		doUseBorder(border++ % 60 > 30);
+	}
+	
+	void onFrame() override {
+		//write(getOffsetX(0.5f), getOffsetY(0.5f), '#', FRED | BWHITE);
+		const char* str = "Hello World! Hitler 2000 Hitler 2000 Hitler 2000";
+		int len = strlen(str);
+		
+		for (int i = 0; i < len; i++)
+			write(i % SX, i / SX, str[i], FWHITE | BBLACK);
+	}
+};
+
 struct textbox : public element {
 	textbox(void* screen)
 		:element(screen)
@@ -21,8 +89,8 @@ struct textbox : public element {
 			setBackground('#', BWHITE | FBLACK);
 			clear();
 			doUseScreen(true);
-			doUseBorder(true);
-			setBorder(FBLUE | BBLACK);
+			//doUseBorder(true);
+			setBorder(FBLUE | BBLACK, true);
 		}
 		
 	void create() {
@@ -52,20 +120,20 @@ struct textbox : public element {
 	void update() {
 		tick++;
 		if (tick > 0)
-			write(sbuffer.length() % sizex, sbuffer.length() / sizex, '|', FWHITE | BBLACK);
+			write(sbuffer.length() % SX, sbuffer.length() / SX, '|', FWHITE | BBLACK);
 		else 
-			write(sbuffer.length() % sizex, sbuffer.length() / sizex, ' ', FWHITE | BBLACK);
+			write(sbuffer.length() % SX, sbuffer.length() / SX, ' ', FWHITE | BBLACK);
 		
 		if (tick > tickCount)
 			tick = -tickCount;
 	}
 	
 	void frame() {
-		if (focused())
-			drawFancyBorder(CHARACTER_BORDER, FRED | BBLACK);
+		//if (focused())
+		//	drawFancyBorder(CHARACTER_BORDER, FRED | BBLACK);
 				
 		for (int i = 0; i < sbuffer.length(); i++)
-			write(i % sizex, i / sizex, sbuffer[i], FWHITE | BBLACK);
+			write(i % SX, i / SX, sbuffer[i], FWHITE | BBLACK);
 	}
 	
 	std::string sbuffer;
@@ -118,12 +186,20 @@ struct stest : public element {
 	};
 };
 
-int main() {
+int wmain() {
 	screen wscreen;
+	s_screen = &wscreen;
+	newTb n;
+	wscreen.child->add(&n);
+	//wscreen.child = &n;
+	/*
 	stest testelement = stest(&wscreen);
 	wscreen.child->add(&testelement);
-	
-	textbox textbox1(&wscreen);
+	*/
+	//textbox textbox1(&wscreen);
+	//n.add(&textbox1);
+	n.setc(0.25f,0.25f,0.25f,0.25f);
+	/*
 	textbox textbox2(&wscreen);
 	textbox textbox3(&wscreen);
 	textbox textbox4(&wscreen);
@@ -137,6 +213,7 @@ int main() {
 	textbox2.setc(0.5f, 0.0f, 0.5f, 0.5f);
 	textbox3.setc(0.0f, 0.5f, 0.5f, 0.5f);
 	textbox4.setc(0.5f, 0.5f, 0.5f, 0.5f);	
+	*/
 	
 	wscreen.start();
 

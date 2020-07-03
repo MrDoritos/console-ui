@@ -76,6 +76,7 @@ void element::resize() {
 }
 
 void element::onFrame() {
+	clear();
 	frame();
 	for (auto* e : children) {
 		if (e->doFrame)

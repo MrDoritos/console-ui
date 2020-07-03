@@ -11,7 +11,7 @@ struct box {
 		x = x < 0 ? 0 : x;
 		y = y < 0 ? 0 : y;
 	}
-	
+		
 	int get(int x, int y) {
 		return (y * sizex) + x;
 	}
@@ -38,6 +38,14 @@ struct box {
 			return 0.0f;
 		
 		return (float(sizex) * scale) - (length / 2);
+	}
+	
+	int getOffsetX(float scale) {
+		return getOffsetX(scale, 0);
+	}
+	
+	int getOffsetY(float scale) {
+		return getOffsetY(scale, 0);
 	}
 	
 	int getOffsetY(float scale, float length) {
