@@ -7,7 +7,7 @@ echo %CD%
 :: -DFREEGLUT_GLES
 ::-lgdi32 -luser32 -lglu32 -lm -lwinmm
 ::-DFREEGLUT_STATIC
-cmd /c g++ -I. framebuffer.cpp box.cpp screen.cpp element.cpp -I%CONSOLE% %WCONSOLE% %ADV% %* -o console-ui.exe -ggdb -w -fpermissive -municode -O0
+cmd /c g++ -I. framebuffer.cpp box.cpp screen.cpp element.cpp -I%CONSOLE% %WCONSOLE% %ADV% %* -o console-ui.exe -ggdb -w -fpermissive -municode -O2
 if "%errorlevel%" NEQ "0" (
 ::start /b sam You are a dumb nigger.
 pause

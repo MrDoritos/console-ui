@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "framebuffer.h"
 
 #include "screen.h"
@@ -14,6 +16,14 @@ framebuffer::framebuffer(screen* screen)
 	useBorder = false;
 	useNull = false;
 	doClear = true;
+}
+
+bool framebuffer::bound(int x, int y) {
+	/*if (useBorder)
+		return (x > offsetx + 1 && y > offsety + 1 && x < offsetx + sizex - 2 && y < offsety + sizey - 2);
+	else*/
+		return (x > -1 && y > -1 && x < sizex && y < sizey);
+		//return true;
 }
 
 void framebuffer::setBox(box box) {
@@ -209,8 +219,8 @@ void framebuffer::frame() {
 	}
 }
 
-void framebuffer::clear() {
-	if (!doClear)
+void framebuffer::clear(bool force = false) {
+	if (!doClear && !force)
 		return;
 	
 	if (useBackground)
@@ -262,4 +272,165 @@ void framebuffer::write(int x, int y, char character, char color, bool borderOve
 		cb[get(x, y)] = color;
 	}
 	*/
+}
+
+//Drawing functions
+void framebuffer::drawLine(int x1, int y1, int x2, int y2, wchar_t character, char color) {	
+	int x,y,dx,dy,dx1,dy1,px,py,xe,ye,i;
+	
+	dx=x2-x1;
+	dy=y2-y1;
+	
+	dx1=fabs(dx);
+	dy1=fabs(dy);
+	
+	px=2*dy1-dx1;
+	py=2*dx1-dy1;
+
+	if(dy1<=dx1) {
+		if(dx>=0) {
+			x=x1;
+			y=y1;
+			xe=x2;
+		} else {
+			x=x2;
+			y=y2;
+			xe=x1;
+		}
+		if (bound(x,y)) {
+			write(x, y, character, color);
+			//fb[get(x,y)] = character;
+			//cb[get(x,y)] = color;
+		}
+		
+		for(i=0;x<xe;i++) {
+			x=x+1;
+			if(px<0) {
+				px=px+2*dy1;
+			} else {
+				if((dx<0 && dy<0) || (dx>0 && dy>0)) {
+					y=y+1;
+				} else {
+					y=y-1;
+				}
+				px=px+2*(dy1-dx1);
+			}
+			
+			if (bound(x,y)) {
+				write(x, y, character, color);
+				//fb[get(x,y)] = character;
+				//cb[get(x,y)] = color;
+			}
+		}
+	} else {
+		if(dy>=0) {				
+			x=x1;
+			y=y1;
+			ye=y2;
+		} else {
+			x=x2;
+			y=y2;
+			ye=y1;
+		}  
+		
+		//write(x, y, character, color);
+		if (bound(x,y)) {
+			write(x, y, character, color);
+			//fb[get(x,y)] = character;
+			//cb[get(x,y)] = color;
+		}
+
+		for(i=0;y<ye;i++) {
+			y=y+1;
+			if(py<=0) {
+				py=py+2*dx1;
+			} else {
+				if((dx<0 && dy<0) || (dx>0 && dy>0)) {
+					x=x+1;
+				} else {
+					x=x-1;
+				}
+				
+				py=py+2*(dx1-dy1);
+			}	
+			
+			if (bound(x,y)) {
+				write(x, y, character, color);
+				//fb[get(x,y)] = character;
+				//cb[get(x,y)] = color;
+			}
+		}
+	}
+	
+	//modify = true;
+}
+
+void framebuffer::drawLine(int x0, int y0, int x1, int y1, char character, char color) {	
+	drawLine(x0, y0, x1, y1, (wchar_t)character, color);
+}
+
+
+void framebuffer::drawTriangle(int x0, int y0, int x1, int y1, int x2, int y2, wchar_t character, char color) {
+	if (!bound(x0, y0) ||
+		!bound(x1, y1) ||
+		!bound(x2, y2))
+		//return;
+		{ fprintf(stderr, "unbound\r\n");}
+	
+	if (y0 > y1) {
+		std::swap(y0, y1);
+		std::swap(x0, x1);
+	}
+	if (y0 > y2) {
+		std::swap(y0, y2);
+		std::swap(x0, x2);
+	}
+	if (y1 > y2) {
+		std::swap(y1, y2);
+		std::swap(x1, x2);
+	}
+	
+	int total_height = y2 - y0;
+	
+	for (int y = y0; y <= y1; y++) {
+		int segment_height = y1-y0+1; 
+		float alpha = (float)(y-y0)/total_height; 
+		float beta  = (float)(y-y0)/segment_height; // be careful with divisions by zero 
+		//Vec2i A = t0 + (t2-t0)*alpha;
+		int Ay = y0 + (y2 - y0) * alpha;
+		int Ax = x0 + (x2 - x0) * alpha;
+		//Vec2i B = t0 + (t1-t0)*beta; 
+		int By = y0 + (y1 - y0) * beta;
+		int Bx = x0 + (x1 - x0) * beta;
+		
+		if (Ax>Bx) { std::swap(Ax, Bx); std::swap(Ay, By); }
+		
+		for (unsigned int j=Ax; j<=Bx; j++) { 
+			if (bound(j, y)) {
+				write(j, y, character, color);
+			}
+		} 			
+	}
+			
+	for (unsigned int y=y1; y<=y2; y++) { 
+		int segment_height =  y2-y1+1; 
+		float alpha = (float)(y-y0)/total_height; 
+		float beta  = (float)(y-y1)/segment_height; // be careful with divisions by zero 			
+		int Ay = y0 + (y2 - y0) * alpha;
+		int Ax = x0 + (x2 - x0) * alpha;			
+		int By = y1 + (y2 - y1) * beta;
+		int Bx = x1 + (x2 - x1) * beta;
+		
+		if (Ax>Bx) { std::swap(Ax, Bx); std::swap(Ay, By); }
+					
+		for (unsigned int j=Ax; j<=Bx; j++) { 
+			if (bound(j, y)) {
+				write(j, y, character, color);
+			}
+		} 
+	} 
+}
+
+void framebuffer::drawTriangle(int x0, int y0, int x1, int y1, int x2, int y2, char character, char color) {
+	drawTriangle(x0, y0, x1, y1, x2, y2, (wchar_t)character, color);
 }

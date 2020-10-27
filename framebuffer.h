@@ -38,10 +38,21 @@ struct framebuffer : public box {
 	void doUseBorder(bool uB);
 	void doUseClear(bool c);
 	void frame();
-	void clear();
+	void clear(bool force = false);
 	void clear(char character, char color);
 	void write(int x, int y, char character, char color, bool borderOverride = false);
 	void write(int x, int y, wchar_t character, char color, bool borderOverride = false);
+	bool bound(int x, int y);
+	
+	//Drawing functions
+	void drawRectangle(int x0, int y0, int x1, int y1, wchar_t character, char color);
+	void drawRectangle(int x0, int y0, int x1, int y1, char character, char color);
+	void drawFill(int x0, int y0, int x1, int y1, wchar_t character, char color);
+	void drawFill(int x0, int y0, int x1, int y1, char character, char color);
+	void drawLine(int x1, int y1, int x2, int y2, wchar_t character, char color);
+	void drawLine(int x0, int y0, int x1, int y1, char character, char color);
+	void drawTriangle(int x0, int y0, int x1, int y1, int x2, int y2, wchar_t character, char color);
+	void drawTriangle(int x0, int y0, int x1, int y1, int x2, int y2, char character, char color);
 	
 	wchar_t* fb;
 	char* cb;

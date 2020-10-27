@@ -20,22 +20,27 @@ void element::setc(float positionx, float positiony, float scalex, float scaley)
 	box b = parent->getc(positionx, positiony, scalex, scaley);
 	setc(b);
 }
+
+void element::setc(float position, float scale) {
+	box b = parent->getc(position, position, scale, scale);
+	setc(b);
+}
 	
 box element::getc(float position, float scale) {
-	int nSizeX = scale * sizex - 1;
-	int nSizeY = scale * sizey - 1;
+	int nSizeX = scale * sizex; //-1
+	int nSizeY = scale * sizey; //-1
 	int nOffsetX = position * sizex;//((position * sizex) - (nSizeX / 2.0f));
 	int nOffsetY = position * sizey;//((position * sizey) - (nSizeY / 2.0f));
-	box box(nOffsetX, nOffsetY, nSizeX, nSizeY);
+	box box(nOffsetX + offsetx, nOffsetY + offsety, nSizeX, nSizeY);
 	return box;
 }
 
 box element::getc(float positionx, float positiony, float scalex, float scaley) {
-	int nSizeX = scalex * sizex - 1;
-	int nSizeY = scaley * sizey - 1;
+	int nSizeX = scalex * sizex; //-1
+	int nSizeY = scaley * sizey; //-1
 	int nOffsetX = positionx * sizex;
 	int nOffsetY = positiony * sizey;
-	box box(nOffsetX, nOffsetY, nSizeX, nSizeY);
+	box box(nOffsetX + offsetx, nOffsetY + offsety, nSizeX, nSizeY);
 	return box;	
 }
 	
@@ -77,12 +82,14 @@ void element::resize() {
 
 void element::onFrame() {
 	clear();
+	handler.handle(FLG_FRAME);
 	frame();
 	for (auto* e : children) {
 		if (e->doFrame)
 			e->onFrame();
 	}
-	handler.handle(FLG_FRAME);
+	
+	//clear(); frame();  children; handler();
 }
 
 void element::onClear() {
@@ -115,13 +122,14 @@ element* element::add(element* element) {
 	element->parent = this; //Why the fuck ain't this workin
 	children.push_back(element);
 	//Call the resize? Sure.. can't call resize, call create instead
-	create();
+	//You idiot, call the child's create
+	element->create();
 	return element;
 }
 
 element* element::add(element& element) {
 	element.parent = this;
 	children.push_back(&element);
-	create();
+	element.create();
 	return &element;
 }

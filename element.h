@@ -35,6 +35,7 @@ struct element : public framebuffer {
 	void setc(box box);
 	//Relative to parent
 	void setc(float positionx, float positiony, float scalex, float scaley);
+	void setc(float position, float scale);
 	
 	box getc(float position, float scale); //Position relative to this element, and a scale also relative
 	box getc(float positionx, float positiony, float scalex, float scaley);
