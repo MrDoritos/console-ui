@@ -67,15 +67,20 @@ void screen::loop() {
 			return;
 		}			
 		if (HASKEY(key, VK_TAB) && HASMOD(key, __CTRL)) {
+			#ifdef DEBUG
 			fprintf(stderr, "focus change %ld to ", focused);
+			#endif
 			focusPush();
+			#ifdef DEBUG
 			fprintf(stderr, "%ld\r\n", focused);
+			#endif
 		}
+		#ifdef DEBUG
 		if (key) {
 			std::bitset<32> b(key);
 			fprintf(stderr, "You pressed %i:%c [%s]\r\n", key, key, b.to_string().c_str());		
 		}
-		
+		#endif
 		if (pressed == key) {
 			held = key;
 			child->keyheld();
