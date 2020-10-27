@@ -1,5 +1,5 @@
+#include "box.h"
 #include "element.h"
-
 #include "screen.h"
 /*
 element::element(screen* scr)

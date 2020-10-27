@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "box.h"
 #include "eventHandler.h"
 #include "framebuffer.h"
 
