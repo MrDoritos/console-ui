@@ -1,6 +1,6 @@
-#include "box.h"
+//#include "box.h"
 #include "element.h"
-#include "screen.h"
+//#include "screen.h"
 /*
 element::element(screen* scr)
 	:framebuffer(scr)
@@ -11,6 +11,7 @@ element::element(screen* scr)
 
 //We also have to notify the framebuffer
 //and call resize
+
 void element::setc(box box) {
 	setBox(box);
 	resize();
@@ -115,7 +116,8 @@ void element::focus() {
 }
 
 bool element::focused() {
-	return screen->focused == this;
+	return false;
+	//return screen->focused == this;
 }
 
 element* element::add(element* element) {
