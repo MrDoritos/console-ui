@@ -14,7 +14,7 @@
 
 #define FLG_NUM 12
 
-#define func(cs, xs) ((void(*)(cs*))&xs)
+#define func(cs, xs) ( (void(*)(void*)) ((void(*)(cs*))&xs) )
 
 
 struct eventHandler {

@@ -50,7 +50,7 @@ void screen::focusPush() {
 }
 
 bool screen::focusPush(element* current, bool& token) {
-	
+	return false;
 }
 
 //Reverse iterator, however you do dat

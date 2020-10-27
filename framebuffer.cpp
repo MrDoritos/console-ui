@@ -219,7 +219,7 @@ void framebuffer::frame() {
 	}
 }
 
-void framebuffer::clear(bool force = false) {
+void framebuffer::clear(bool force) {
 	if (!doClear && !force)
 		return;
 	
@@ -238,7 +238,7 @@ void framebuffer::clear(char character, char color) {
 			write(x, y, character, color, true);
 }	
 
-void framebuffer::write(int x, int y, wchar_t character, char color, bool borderOverride = false) {
+void framebuffer::write(int x, int y, wchar_t character, char color, bool borderOverride) {
 	if (useScreen) {
 		int nX = x, nY = y;
 		if (useBorder && !borderOverride) {
@@ -260,7 +260,7 @@ void framebuffer::write(int x, int y, wchar_t character, char color, bool border
 	}
 }
 
-void framebuffer::write(int x, int y, char character, char color, bool borderOverride = false) {
+void framebuffer::write(int x, int y, char character, char color, bool borderOverride) {
 	write(x, y, (wchar_t)character, color, borderOverride);
 	/*
 	if (useScreen) {
