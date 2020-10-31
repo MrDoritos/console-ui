@@ -36,6 +36,7 @@ screen::screen()
 void screen::start() {
 	memset(keys, 0, sizeof(keys));
 	run = true;
+	child->create(); //Allocate any memory for frame buffers
 	loop();
 }
 
@@ -160,5 +161,7 @@ void screen::loop() {
 		console::sleep(33);
 		
 	}
+	
+	child->close();
 }
 

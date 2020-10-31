@@ -70,9 +70,9 @@ void element::keyrelease() {
 }
 
 void element::create() {
+	handler.handle(FLG_CREATE);
 	for (auto* e : children)
 		e->create();
-	handler.handle(FLG_CREATE);
 }
 
 void element::resize() {

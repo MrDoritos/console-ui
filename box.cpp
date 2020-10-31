@@ -7,6 +7,13 @@ box::box(int offsetx, int offsety, int sizex, int sizey) {
 	this->offsety = offsety;
 }
 
+box::box(int sizex, int sizey) {
+	this->sizex = sizex;
+	this->sizey = sizey;
+	this->offsetx = 0;
+	this->offsety = 0;
+}
+
 box::box() {
 	this->sizex = 0;
 	this->sizey = 0;

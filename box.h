@@ -4,6 +4,7 @@
 
 struct box {
 	box(int offsetx, int offsety, int sizex, int sizey);
+	box(int sizex, int sizey);
 	box();
 	void clip(int& x, int &y) {
 		x = x >= sizex ? sizex - 1 : x;
