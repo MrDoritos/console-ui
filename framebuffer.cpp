@@ -32,11 +32,11 @@ void framebuffer::setBox(box box) {
 	clear();
 }
 
-void framebuffer::setBorder(char color) {
+void framebuffer::setBorder(color_t color) {
 	borderColor = color;
 }
 
-void framebuffer::setBorder(char color, bool state) {
+void framebuffer::setBorder(color_t color, bool state) {
 	doUseBorder(state);
 	setBorder(color);
 }
@@ -69,7 +69,7 @@ int framebuffer::getOffY() {
 	return offsety;
 }
 
-void framebuffer::drawFancyBorder(int type, char color) {
+void framebuffer::drawFancyBorder(int type, color_t color) {
 	int sizex = this->sizex - 1;
 	int sizey = this->sizey - 1;
 	switch (type) {
@@ -133,11 +133,11 @@ void framebuffer::drawFancyBorder(int type, char color) {
 	}
 }
 
-void framebuffer::drawBorder(char character, char color) {
+void framebuffer::drawBorder(char character, color_t color) {
 	drawBorder((wchar_t)character, color);
 }
 
-void framebuffer::drawBorder(wchar_t character, char color) {
+void framebuffer::drawBorder(wchar_t character, color_t color) {
 	for (int x = 0; x < sizex; x++) {
 		write(x, 0, character, color, true);
 		write(x, sizey - 1, character, color, true);
@@ -148,7 +148,7 @@ void framebuffer::drawBorder(wchar_t character, char color) {
 	}	
 }
 
-void framebuffer::setBackground(char character, char color) {
+void framebuffer::setBackground(char character, color_t color) {
 	useBackground = true;
 	backgroundcharacter = character;
 	backgroundcolor = color;
@@ -203,7 +203,7 @@ void framebuffer::setOffset(int offsetx, int offsety) {
 
 void framebuffer::allocate(int sizex, int sizey) {
 	fb = new wchar_t[sizex * sizey];
-	cb = new char[sizex * sizey];
+	cb = new color_t[sizex * sizey];
 }
 
 void framebuffer::frame() {
@@ -232,13 +232,13 @@ void framebuffer::clear(bool force) {
 			clear(' ', backgroundcolor);
 }
 
-void framebuffer::clear(char character, char color) {
+void framebuffer::clear(char character, color_t color) {
 	for (int x = 0; x < sizex; x++)
 		for (int y = 0; y < sizey; y++)
 			write(x, y, character, color, true);
 }	
 
-void framebuffer::write(int x, int y, wchar_t character, char color, bool borderOverride) {
+void framebuffer::write(int x, int y, wchar_t character, color_t color, bool borderOverride) {
 	if (useScreen) {
 		int nX = x, nY = y;
 		if (useBorder && !borderOverride) {
@@ -260,7 +260,7 @@ void framebuffer::write(int x, int y, wchar_t character, char color, bool border
 	}
 }
 
-void framebuffer::write(int x, int y, char character, char color, bool borderOverride) {
+void framebuffer::write(int x, int y, char character, color_t color, bool borderOverride) {
 	write(x, y, (wchar_t)character, color, borderOverride);
 	/*
 	if (useScreen) {
@@ -275,7 +275,7 @@ void framebuffer::write(int x, int y, char character, char color, bool borderOve
 }
 
 //Drawing functions
-void framebuffer::drawLine(int x1, int y1, int x2, int y2, wchar_t character, char color) {	
+void framebuffer::drawLine(int x1, int y1, int x2, int y2, wchar_t character, color_t color) {	
 	int x,y,dx,dy,dx1,dy1,px,py,xe,ye,i;
 	
 	dx=x2-x1;
@@ -365,12 +365,12 @@ void framebuffer::drawLine(int x1, int y1, int x2, int y2, wchar_t character, ch
 	//modify = true;
 }
 
-void framebuffer::drawLine(int x0, int y0, int x1, int y1, char character, char color) {	
+void framebuffer::drawLine(int x0, int y0, int x1, int y1, char character, color_t color) {	
 	drawLine(x0, y0, x1, y1, (wchar_t)character, color);
 }
 
 
-void framebuffer::drawTriangle(int x0, int y0, int x1, int y1, int x2, int y2, wchar_t character, char color) {
+void framebuffer::drawTriangle(int x0, int y0, int x1, int y1, int x2, int y2, wchar_t character, color_t color) {
 	if (!bound(x0, y0) ||
 		!bound(x1, y1) ||
 		!bound(x2, y2))
@@ -431,6 +431,17 @@ void framebuffer::drawTriangle(int x0, int y0, int x1, int y1, int x2, int y2, w
 	} 
 }
 
-void framebuffer::drawTriangle(int x0, int y0, int x1, int y1, int x2, int y2, char character, char color) {
+void framebuffer::drawTriangle(int x0, int y0, int x1, int y1, int x2, int y2, char character, color_t color) {
 	drawTriangle(x0, y0, x1, y1, x2, y2, (wchar_t)character, color);
+}
+
+void framebuffer::drawRectangle(int x0, int y0, int x1, int y1, wchar_t character, color_t color) {
+	drawLine(x0, y0, x0, y1, character, color);
+	drawLine(x1, y0, x1, y1, character, color);
+	drawLine(x0, y0, x1, y0, character, color);
+	drawLine(x0, y1, x1, y1, character, color);	
+}
+
+void framebuffer::drawRectangle(int x0, int y0, int x1, int y1, char character, color_t color) {
+	drawRectangle(x0, y0, x1, y1, (wchar_t)character, color);	
 }
