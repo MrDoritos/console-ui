@@ -12,6 +12,10 @@ struct box {
 		x = x < 0 ? 0 : x;
 		y = y < 0 ? 0 : y;
 	}
+	
+	bool bound(int x, int y) {
+		return (x > -1 && x < sizex && y > -1 && y < sizey);
+	}
 		
 	int get(int x, int y) {
 		return (y * sizex) + x;

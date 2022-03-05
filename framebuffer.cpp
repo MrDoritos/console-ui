@@ -238,6 +238,16 @@ void framebuffer::clear(char character, color_t color) {
 			write(x, y, character, color, true);
 }	
 
+void framebuffer::write(int x, int y, const char *cstring, color_t color, bool borderOverride) {
+	for (int i = 0; i < strlen(cstring); i++)
+		write(x + i,y,cstring[i],color,borderOverride);
+}
+
+void framebuffer::write(int x, int y, const wchar_t *cstring, color_t color, bool borderOverride) {
+	for (int i = 0; i < wcslen(cstring); i++)
+		write(x + i,y,cstring[i],color,borderOverride);
+}
+
 void framebuffer::write(int x, int y, wchar_t character, color_t color, bool borderOverride) {
 	if (useScreen) {
 		int nX = x, nY = y;
@@ -249,12 +259,15 @@ void framebuffer::write(int x, int y, wchar_t character, color_t color, bool bor
 			nY += offsety;
 		}
 		scr->clip(nX, nY);
+		//if (bound(nX, nY))
 		scr->write(nX, nY, character, color, true);
 	} else {
 		if (useBorder && !borderOverride) {
 			x++;
 			y++;
 		}
+		if (!bound(x, y))
+			return;
 		fb[get(x, y)] = character;
 		cb[get(x, y)] = color;		
 	}
@@ -444,4 +457,14 @@ void framebuffer::drawRectangle(int x0, int y0, int x1, int y1, wchar_t characte
 
 void framebuffer::drawRectangle(int x0, int y0, int x1, int y1, char character, color_t color) {
 	drawRectangle(x0, y0, x1, y1, (wchar_t)character, color);	
+}
+
+void framebuffer::drawFill(int x0, int y0, int x1, int y1, wchar_t character, color_t color) {
+	for (int x = x0; x < x1; x++)
+		for (int y = y0; y < y1; y++)
+			write(x, y, character, color);
+}
+
+void framebuffer::drawFill(int x0, int y0, int x1, int y1, char character, color_t color) {
+	drawFill(x0, y0, x1, y1, (wchar_t)character, color);
 }

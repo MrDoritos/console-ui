@@ -8,14 +8,14 @@
 screen::screen()
 	:framebuffer(this)
 {
-	//while(!adv::ready);
-	if (!adv::ready) {
-		std::unique_lock<std::mutex> lk(adv::startLock);
-		if (adv::ready)
-			goto cond;
-		adv::cvStart.wait(lk);
-	}
-	cond:;
+	while (!adv::ready) console::sleep(10);
+	//if (!adv::ready) {
+	//	std::unique_lock<std::mutex> lk(adv::startLock);
+	//	if (adv::ready)
+	//		goto cond;
+	//	adv::cvStart.wait(lk);
+	//}
+	//cond:;
 		
 	adv::setThreadState(false); //We do it manually
 	//adv::setDrawingMode(DRAWINGMODE_COMPARE);

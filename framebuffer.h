@@ -44,6 +44,8 @@ struct framebuffer : public box {
 	void clear(char character, color_t color);
 	void write(int x, int y, char character, color_t color, bool borderOverride = false);
 	void write(int x, int y, wchar_t character, color_t color, bool borderOverride = false);
+	void write(int x, int y, const char *cstring, color_t color, bool borderOverride = false);
+	void write(int x, int y, const wchar_t *cstring, color_t color, bool borderOverride = false);
 	bool bound(int x, int y);
 	
 	//Drawing functions
